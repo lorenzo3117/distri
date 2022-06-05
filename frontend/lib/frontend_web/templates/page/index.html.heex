@@ -1,0 +1,28 @@
+<div class="d-flex">
+  <div>
+    <h3>Add new player</h3>
+    <p>
+      <%= form_tag("/players") do
+        [tag(:input, type: "text", name: "name"),
+        tag(:input, type: "submit", value: "New player")]
+      end%>
+    </p>
+  </div>
+  <div>
+    <h3>Create new tables</h3>
+    <p>
+      <%= form_tag("/tables") do
+        [tag(:input, type: "number", name: "number_of_tables"),
+        tag(:input, type: "submit", value: "New tables")]
+      end%>
+    </p>
+  </div>
+</div>
+
+<h3>Number of Blackjack tables</h3>
+<p><%= @number_of_tables %></p>
+
+<h3>Players</h3>
+<%= for player <- @players do %>
+  <span><%= player.name %>, <%= player.balance %></span><br/>
+<% end %>
