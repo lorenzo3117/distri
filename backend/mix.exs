@@ -2,20 +2,21 @@ defmodule Casino.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :casino,
-     version: "0.1.0",
-     elixir: "~> 1.3",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps()]
+    [
+      app: :casino,
+      version: "0.1.0",
+      elixir: "~> 1.3",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      deps: deps()
+    ]
   end
 
   # Configuration for the OTP application
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger],
-     mod: {Casino, []}]
+    [applications: [:logger], mod: {Casino, []}]
   end
 
   # Dependencies can be Hex packages:
@@ -28,6 +29,6 @@ defmodule Casino.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [{:amqp, "~> 1.0"}]
   end
 end
