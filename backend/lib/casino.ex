@@ -13,6 +13,14 @@ defmodule Casino do
     Supervisor.start_link(children, opts)
   end
 
+  def sendMessage(message) do
+    {:ok, connection} = AMQP.Connection.open()
+    {:ok, channel} = AMQP.Channel.open(connection)
+    AMQP.Queue.declare(channel, "hello")
+    AMQP.Basic.publish(channel, "", "hello", message)
+    AMQP.Connection.close(connection)
+  end
+
   def add_player(name, balance) do
     Casino.Players.Server.add(name, balance)
   end
@@ -22,7 +30,7 @@ defmodule Casino do
   end
 
   def list_players do
-    Casino.Players.Server.list
+    Casino.Players.Server.list()
   end
 
   def add_blackjack_table(count \\ 1) do
@@ -30,10 +38,10 @@ defmodule Casino do
   end
 
   def remove_blackjack_table do
-    Casino.Games.Blackjack.Server.remove_table
+    Casino.Games.Blackjack.Server.remove_table()
   end
 
   def count_blackjack_tables do
-    Casino.Games.Blackjack.Server.count_tables
+    Casino.Games.Blackjack.Server.count_tables()
   end
 end

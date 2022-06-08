@@ -20,7 +20,7 @@ defmodule Frontend.MixProject do
   def application do
     [
       mod: {Frontend.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :amqp]
     ]
   end
 
@@ -46,7 +46,9 @@ defmodule Frontend.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:casino, path: "../backend"}
+      {:casino, path: "../backend"},
+      {:amqp, "~> 1.0"},
+      {:phx_izitoast, "~> 0.1.2"}
     ]
   end
 

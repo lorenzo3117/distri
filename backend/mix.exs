@@ -16,7 +16,7 @@ defmodule Casino.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger], mod: {Casino, []}]
+    [applications: [:logger, :amqp], mod: {Casino, []}]
   end
 
   # Dependencies can be Hex packages:
