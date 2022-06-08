@@ -3,7 +3,7 @@
     <h3>Add new player</h3>
     <p>
       <%= form_tag("/players") do
-        [tag(:input, type: "text", name: "name"),
+        [tag(:input, type: "text", name: "name", placeholder: "Player name"),
         tag(:input, type: "submit", value: "New player")]
       end%>
     </p>
@@ -12,7 +12,7 @@
     <h3>Create new tables</h3>
     <p>
       <%= form_tag("/tables") do
-        [tag(:input, type: "number", name: "number_of_tables"),
+        [tag(:input, type: "number", name: "number_of_tables", placeholder: "Number of tables"),
         tag(:input, type: "submit", value: "New tables")]
       end%>
     </p>
