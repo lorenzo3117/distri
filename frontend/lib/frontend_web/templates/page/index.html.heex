@@ -2,27 +2,31 @@
   <div>
     <h3>Add new player</h3>
     <p>
-      <%= form_tag("/players") do
+      <%= form_tag("/player") do
         [tag(:input, type: "text", name: "name", placeholder: "Player name", required: true),
         tag(:input, type: "submit", value: "New player")]
       end%>
     </p>
   </div>
   <div>
-    <h3>Create new tables</h3>
+    <h3>Create new coinflip room</h3>
     <p>
-      <%= form_tag("/tables") do
-        [tag(:input, type: "number", name: "number_of_tables", placeholder: "Number of tables", min: 1, required: true),
-        tag(:input, type: "submit", value: "New tables")]
+      <%= form_tag("/coinflip") do
+        [tag(:input, type: "text", name: "name", placeholder: "Room name", required: true),
+        tag(:input, type: "submit", value: "New room")]
       end%>
     </p>
   </div>
 </div>
 
-<h3>Number of Blackjack tables</h3>
-<p><%= @number_of_tables %></p>
-
 <h3>Players</h3>
 <%= for player <- @players do %>
   <span><%= player.name %>, <%= player.balance %></span><br/>
+<% end %>
+
+<br />
+
+<h3>Coinflip rooms</h3>
+<%= for coinflip <- @coinflips do %>
+  <%= link(coinflip.name, to: Routes.page_path(@conn, :coinflip_room, id: coinflip.id)) %><br/>
 <% end %>

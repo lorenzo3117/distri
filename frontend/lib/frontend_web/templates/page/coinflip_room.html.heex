@@ -1,0 +1,8 @@
+<h2>Coinflip room</h2>
+<%= for coinflip <- @coinflips do %>
+  <ul>
+    <li>Id: <%= coinflip.id %></li>
+    <li>Name: <%= coinflip.name %></li>
+    <li>Head: <%= coinflip.head %></li>
+  </ul>
+<% end %>

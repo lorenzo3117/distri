@@ -4,13 +4,13 @@ defmodule FrontendWeb.PageController do
   def index(conn, _params) do
     render(conn, "index.html",
       players: Casino.list_players(),
-      number_of_tables: Casino.count_blackjack_tables()
+      coinflips: Casino.list_coinflips()
     )
   end
 
   # TODO error handling
 
-  def players(conn, %{"name" => name}) do
+  def player(conn, %{"name" => name}) do
     _pid = Casino.add_player(name, 500)
 
     conn
@@ -18,12 +18,20 @@ defmodule FrontendWeb.PageController do
     |> redirect(to: "/")
   end
 
-  def tables(conn, %{"number_of_tables" => number_of_tables}) do
-    {amount, _rest} = Integer.parse(number_of_tables)
-    _pid = Casino.add_blackjack_table(amount)
+  def coinflip(conn, %{"name" => name}) do
+    random_number = :rand.uniform(10)
+    head = random_number < 5
+    _pid = Casino.add_coinflip(name, head)
 
     conn
-    |> PhxIzitoast.success("", 'Blackjack tables added')
+    |> PhxIzitoast.success("", 'Coinflip room added')
     |> redirect(to: "/")
+  end
+
+  def coinflip_room(conn, %{"id" => id}) do
+    coinflip = Casino.get_coinflip(id)
+
+    # TODO should just be the coinflip, not an array, but couldn't fix the heex
+    render(conn, "coinflip_room.html", coinflips: [coinflip])
   end
 end

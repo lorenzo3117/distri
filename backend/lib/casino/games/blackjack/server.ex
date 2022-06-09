@@ -71,25 +71,28 @@ defmodule Casino.Games.Blackjack.Server do
   defp open_table(n) when is_number(n) and n <= 1 do
     start_table
   end
+
   defp open_table(n) when is_number(n) do
     start_table
     open_table(n - 1)
   end
 
   defp start_table do
-    {:ok, pid} = Casino.Games.Blackjack.TableSupervisor.start_table
+    {:ok, pid} = Casino.Games.Blackjack.TableSupervisor.start_table()
 
     Process.monitor(pid)
   end
 
   defp close_table(state) when state == 0, do: 0
+
   defp close_table(state) when is_number(state) do
     Supervisor.which_children(Casino.Games.Blackjack.TableSupervisor)
-      |> List.last
-      |> close_table
+    |> List.last()
+    |> close_table
 
-      state
+    state
   end
+
   defp close_table({_, pid, _, _}) when is_pid(pid) do
     Supervisor.terminate_child(Casino.Games.Blackjack.TableSupervisor, pid)
   end
