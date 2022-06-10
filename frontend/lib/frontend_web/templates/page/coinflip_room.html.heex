@@ -1,8 +1,30 @@
-<h2>Coinflip room</h2>
 <%= for coinflip <- @coinflips do %>
-  <ul>
-    <li>Id: <%= coinflip.id %></li>
-    <li>Name: <%= coinflip.name %></li>
-    <li>Head: <%= coinflip.head %></li>
-  </ul>
+  <h2>Coinflip room <%= coinflip.name %> (id: <%= coinflip.id %>, heads: <%= coinflip.heads %>)</h2>
 <% end %>
+
+<div class="bet-timer">
+  <h3>Time until next bet</h3>  
+  <h1>04:59</h1>
+</div>
+
+<div>
+  <h3>Place a bet</h3>
+    <%= form_tag("/coinflip_room_bet", class: "bet-form") do
+      [tag(:input, type: "number", name: "bet", placeholder: "Bet", required: true),
+      content_tag(:label, "Heads"),
+      tag(:input, type: "radio", name: "heads", value: "heads", checked: true),
+      content_tag(:label, "Tails"),
+      tag(:input, type: "radio", name: "heads", value: "tails"),
+      tag(:input, type: "submit", value: "Place bet")]
+    end%>
+</div>
+
+<div>
+  <h3>Players</h3>
+  <ul>
+    <li>Player 1: 500€</li>
+    <li>Player 2: 250€</li>
+    <li>Player 3: 1750€</li>
+    <li>Player 4: 10€</li>
+  </ul>
+</div>

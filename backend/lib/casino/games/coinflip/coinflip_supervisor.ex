@@ -13,7 +13,7 @@ defmodule Casino.Games.Coinflip.CoinflipSupervisor do
     supervise(children, strategy: :simple_one_for_one)
   end
 
-  def new_coinflip(head) do
-    Supervisor.start_child(Casino.Games.Coinflip.CoinflipSupervisor, [head])
+  def new_coinflip(heads) do
+    Supervisor.start_child(Casino.Games.Coinflip.CoinflipSupervisor, [heads])
   end
 end

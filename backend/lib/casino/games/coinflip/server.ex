@@ -8,10 +8,10 @@ defmodule Casino.Games.Coinflip.Server do
   end
 
   @doc """
-  Add a new coinflip and head/tails
+  Add a new coinflip and heads/tails
   """
-  def add(name, head) when is_binary(name) and is_boolean(head) do
-    GenServer.cast(__MODULE__, {:add, name, head})
+  def add(name, heads) when is_binary(name) and is_boolean(heads) do
+    GenServer.cast(__MODULE__, {:add, name, heads})
   end
 
   @doc """
@@ -43,8 +43,8 @@ defmodule Casino.Games.Coinflip.Server do
     {:ok, {coinflips, refs}}
   end
 
-  def handle_cast({:add, name, head}, {coinflips, refs}) do
-    {:ok, pid} = Casino.Games.Coinflip.CoinflipSupervisor.new_coinflip(head)
+  def handle_cast({:add, name, heads}, {coinflips, refs}) do
+    {:ok, pid} = Casino.Games.Coinflip.CoinflipSupervisor.new_coinflip(heads)
     ref = Process.monitor(pid)
     id = auto_increment(coinflips)
     refs = Map.put(refs, ref, id)
@@ -65,7 +65,7 @@ defmodule Casino.Games.Coinflip.Server do
     # TODO should use coinflips and not convert to list
     list =
       Enum.map(coinflips, fn {id, {name, pid, _ref}} ->
-        %{id: id, name: name, head: Casino.Games.Coinflip.Coinflip.head(pid)}
+        %{id: id, name: name, heads: Casino.Games.Coinflip.Coinflip.heads(pid)}
       end)
 
     coinflip = Enum.find(list, &(to_string(&1.id) == id))
@@ -77,7 +77,7 @@ defmodule Casino.Games.Coinflip.Server do
   def handle_call({:list}, _from, {coinflips, _refs} = state) do
     list =
       Enum.map(coinflips, fn {id, {name, pid, _ref}} ->
-        %{id: id, name: name, head: Casino.Games.Coinflip.Coinflip.head(pid)}
+        %{id: id, name: name, heads: Casino.Games.Coinflip.Coinflip.heads(pid)}
       end)
 
     {:reply, list, state}

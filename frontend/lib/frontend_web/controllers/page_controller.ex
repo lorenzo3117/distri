@@ -20,8 +20,8 @@ defmodule FrontendWeb.PageController do
 
   def coinflip(conn, %{"name" => name}) do
     random_number = :rand.uniform(10)
-    head = random_number < 5
-    _pid = Casino.add_coinflip(name, head)
+    heads = random_number < 5
+    _pid = Casino.add_coinflip(name, heads)
 
     conn
     |> PhxIzitoast.success("", 'Coinflip room added')
