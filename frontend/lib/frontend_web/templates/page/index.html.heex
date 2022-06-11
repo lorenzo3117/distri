@@ -20,13 +20,24 @@
 </div>
 
 <h3>Players</h3>
-<%= for player <- @players do %>
-  <span><%= player.name %>, <%= player.balance %>, <%= link "Remove", to: Routes.players_path(@conn, :remove, player.id), method: :delete %></span><br/>
+<%= if (length @players) == 0 do %>
+  <span>No players yet</span><br/>
+<% else %>
+  <%= for player <- @players do %>
+    <!-- <span><%= player.name %>, <%= player.balance %>€, <%= link "Remove", to: Routes.players_path(@conn, :remove, player.id), method: :delete %></span><br/> -->
+    <span><%= player.name %>, <%= player.balance %>€</span><br/>
+  <% end %>
 <% end %>
 
-<br />
+<br/>
 
 <h3>Coinflip rooms</h3>
-<%= for coinflip <- @coinflips do %>
-  <%= link(coinflip.name, to: Routes.page_path(@conn, :coinflip_room, id: coinflip.id)) %><br/>
+<%= if (length @coinflips) == 0 do %>
+  <span>No coinflip rooms yet</span>
+<% else %>
+  <ul>
+    <%= for coinflip <- @coinflips do %>
+      <%= link(coinflip.name, to: Routes.page_path(@conn, :coinflip_room, id: coinflip.id)) %><br/>
+    <% end %>
+  </ul>
 <% end %>

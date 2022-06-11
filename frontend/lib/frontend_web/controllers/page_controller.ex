@@ -18,10 +18,10 @@ defmodule FrontendWeb.PageController do
   end
 
   def coinflip_room(conn, %{"id" => id}) do
-    coinflip = Casino.get_coinflip(id)
+    coinflip_room = Casino.get_coinflip(id)
 
     # TODO should just be the coinflip, not an array, but couldn't fix the heex
-    render(conn, "coinflip_room.html", coinflips: [coinflip])
+    render(conn, "coinflip_room.html", coinflip_rooms: [coinflip_room])
   end
 
   def coinflip_room_bet(conn, %{
@@ -29,8 +29,8 @@ defmodule FrontendWeb.PageController do
         "bet" => bet,
         "heads" => heads
       }) do
-    # TODO should be logged in user
-    Casino.bet_coinflip(coinflip_room_id, 1, bet, heads == "heads")
+    player = conn |> get_session(:current_player)
+    Casino.bet_coinflip(coinflip_room_id, player, bet, heads == "heads")
 
     conn
     |> redirect(to: "/coinflip_room?id=#{coinflip_room_id}")

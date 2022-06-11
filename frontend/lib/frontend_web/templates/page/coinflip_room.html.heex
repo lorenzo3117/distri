@@ -1,5 +1,5 @@
-<%= for coinflip <- @coinflips do %>
-  <h2>Coinflip room <%= coinflip.name %> (id: <%= coinflip.id %>)</h2>
+<%= for coinflip_room <- @coinflip_rooms do %>
+  <h2>Coinflip room: <%= coinflip_room.name %></h2>
 <% end %>
 
 <div class="bet-timer">
@@ -7,11 +7,11 @@
   <h1>04:59</h1>
 </div>
 
-<%= for coinflip <- @coinflips do %>
-  <div>
+<%= if logged_in(@conn) do %>
+    <%= for coinflip_room <- @coinflip_rooms do %>
     <h3>Place a bet</h3>
     <%= form_tag("/coinflip_room_bet", class: "bet-form") do
-      [tag(:input, type: "hidden", name: "coinflip_room_id", value: coinflip.id),
+      [tag(:input, type: "hidden", name: "coinflip_room_id", value: coinflip_room.id),
       tag(:input, type: "number", name: "bet", placeholder: "Bet", required: true),
       content_tag(:label, "Heads"),
       tag(:input, type: "radio", name: "heads", value: "heads", checked: true),
@@ -19,18 +19,20 @@
       tag(:input, type: "radio", name: "heads", value: "tails"),
       tag(:input, type: "submit", value: "Place bet")]
     end%>
-</div>
+  <% end %>
+<% else %>
+    <p>You must log in to bet: <%= link "Log in", to: Routes.auth_path(@conn, :index) %></p>
 <% end %>
 
-<div>
-  <h3>Players</h3>
-  <%= for coinflip <- @coinflips do %>
-    <%= if coinflip.players !== %{} do %>
-      <ul>
-        <%= for player <- coinflip.players do %>
-            <span><%= player.id %>: <%= player.bet %>€ on <%= if player.heads == true do %>heads<%= else %>tails<%= end %></span><br/>
-        <% end %>
-      </ul>
-    <%= end %>
+<h3>Players</h3>
+<%= for coinflip_room <- @coinflip_rooms do %>
+  <%= if (length coinflip_room.players ) == 0 do %>
+    <span>No players yet</span><br/>
+  <% else %>
+    <ul>
+      <%= for player <- coinflip_room.players do %>
+          <span><%= player.name %>: <%= player.bet %>€ on <%= if player.heads == true do %>heads<%= else %>tails<%= end %></span><br/>
+      <% end %>
+    </ul>
   <% end %>
-</div>
+<% end %>

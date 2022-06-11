@@ -42,7 +42,7 @@ defmodule Casino.Games.Coinflip.Server do
     GenServer.cast(__MODULE__, {:bet, coinflip_room_id, player_id, bet, heads})
   end
 
-  def handle_cast({:bet, coinflip_room_id, player_id, bet, heads}, {coinflips, refs}) do
+  def handle_cast({:bet, coinflip_room_id, player, bet, heads}, {coinflips, refs}) do
     # TODO should use coinflips and not convert to list
     list =
       Enum.map(coinflips, fn {id, {name, pid, _ref}} ->
@@ -50,9 +50,9 @@ defmodule Casino.Games.Coinflip.Server do
       end)
 
     coinflip = Enum.find(list, &(to_string(&1.id) == coinflip_room_id))
-    Casino.Games.Coinflip.Coinflip.add_player(coinflip.pid, player_id, bet, heads)
+    Casino.Games.Coinflip.Coinflip.add_player(coinflip.pid, player, bet, heads)
 
-    Casino.sendMessage("Bet on coinflip: #{player_id} #{bet} #{heads}")
+    Casino.sendMessage("Bet on coinflip: #{player.name} #{bet} #{heads}")
     {:noreply, {coinflips, refs}}
   end
 

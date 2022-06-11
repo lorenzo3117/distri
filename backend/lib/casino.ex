@@ -25,9 +25,9 @@ defmodule Casino do
     Casino.Players.Server.add(name, balance)
   end
 
-  def remove_player(id) do
-    Casino.Players.Server.remove(id)
-  end
+  # def remove_player(id) do
+  #   Casino.Players.Server.remove(id)
+  # end
 
   def get_player(id) do
     Casino.Players.Server.get(id)
@@ -53,8 +53,8 @@ defmodule Casino do
     Casino.Games.Coinflip.Server.get(id)
   end
 
-  def bet_coinflip(coinflip_room_id, player_id, bet, heads) do
-    Casino.Games.Coinflip.Server.bet(coinflip_room_id, player_id, bet, heads)
+  def bet_coinflip(coinflip_room_id, player, bet, heads) do
+    Casino.Games.Coinflip.Server.bet(coinflip_room_id, player, bet, heads)
   end
 
   def add_blackjack_table(count \\ 1) do
