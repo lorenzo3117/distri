@@ -32,3 +32,5 @@ frontend-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Logs idk
+/log/
