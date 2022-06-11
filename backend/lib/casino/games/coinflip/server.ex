@@ -66,40 +66,21 @@ defmodule Casino.Games.Coinflip.Server do
   end
 
   def handle_info(:take_bet, state) do
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaad")
-    IO.inspect(state)
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaad")
-
     if state !== {%{}, %{}} do
-      id = state |> elem(0) |> Map.keys() |> Enum.at(0)
-      pid = state |> elem(0) |> Map.values() |> Enum.at(0) |> elem(1)
+      for {id, {_name, pid, _ref}} <- state |> elem(0) do
+        random_number = :rand.uniform(10)
+        heads = random_number < 5
+        Casino.sendMessage("Taking bet for room #{id}: #{heads}")
 
-      random_number = :rand.uniform(10)
-      heads = random_number < 5
-      Casino.sendMessage("Bet has been taken for room #{id}: #{heads}")
+        players = Casino.Games.Coinflip.Coinflip.players(pid)
+        winning_players = Enum.filter(players, &(&1.heads == heads))
+        losing_players = Enum.filter(players, &(&1.heads != heads))
 
-      players = Casino.Games.Coinflip.Coinflip.players(pid)
-      winning_players = Enum.filter(players, &(&1.heads == heads))
-      losing_players = Enum.filter(players, &(&1.heads != heads))
+        IO.inspect(winning_players)
+        IO.inspect(losing_players)
 
-      IO.inspect(winning_players)
-      IO.inspect(losing_players)
-
-      Casino.Games.Coinflip.Coinflip.clear_players(pid)
+        Casino.Games.Coinflip.Coinflip.clear_players(pid)
+      end
     end
 
     take_bet()
@@ -110,7 +91,7 @@ defmodule Casino.Games.Coinflip.Server do
   defp take_bet() do
     # Run every 5 minutes
     # Process.send_after(self(), :take_bet, 5 * 60 * 1000)
-    Process.send_after(self(), :take_bet, 30000)
+    Process.send_after(self(), :take_bet, 15000)
   end
 
   def handle_cast({:add, name}, {coinflips, refs}) do

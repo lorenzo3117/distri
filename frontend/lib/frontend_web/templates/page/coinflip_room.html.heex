@@ -28,7 +28,7 @@
     <%= if coinflip.players !== %{} do %>
       <ul>
         <%= for player <- coinflip.players do %>
-            <span><%= player.id %>: <%= player.bet %>€</span><br/>
+            <span><%= player.id %>: <%= player.bet %>€ on <%= if player.heads == true do %>heads<%= else %>tails<%= end %></span><br/>
         <% end %>
       </ul>
     <%= end %>
