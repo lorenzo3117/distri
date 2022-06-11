@@ -9,15 +9,6 @@ defmodule FrontendWeb.PageController do
   end
 
   # TODO error handling
-
-  def player(conn, %{"name" => name}) do
-    _pid = Casino.add_player(name, 500)
-
-    conn
-    |> PhxIzitoast.success("", 'Player added')
-    |> redirect(to: "/")
-  end
-
   def coinflip(conn, %{"name" => name}) do
     random_number = :rand.uniform(10)
     heads = random_number < 5

@@ -14,7 +14,14 @@
       <section class="container">
         <nav>
           <ul>
-            <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
+            <%= if logged_in(@conn) do %>
+                <span>Logged in as <strong><%= logged_in(@conn).name %></strong></span><br>
+                <span>Your balance: <%= logged_in(@conn).balance %></span>
+                <%= link "Log out", to: Routes.auth_path(@conn, :logout) %>
+            <% else %>
+              <%= link "Log in", to: Routes.auth_path(@conn, :index) %>
+            <% end %>
+
             <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
               <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
             <% end %>

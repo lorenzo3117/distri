@@ -18,9 +18,23 @@ defmodule FrontendWeb.Router do
     pipe_through(:browser)
 
     get("/", PageController, :index)
-    post("/player", PageController, :player)
     get("/coinflip_room", PageController, :coinflip_room)
     post("/coinflip", PageController, :coinflip)
+  end
+
+  scope "/auth", FrontendWeb do
+    pipe_through(:browser)
+
+    get("/", AuthController, :index)
+    get("/login/:id", AuthController, :login)
+    get("/logout", AuthController, :logout)
+  end
+
+  scope "/players", FrontendWeb do
+    pipe_through(:browser)
+
+    post("/", PlayersController, :player)
+    delete("/:id", PlayersController, :remove)
   end
 
   # Other scopes may use custom stacks.

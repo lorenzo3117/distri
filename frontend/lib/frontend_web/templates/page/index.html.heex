@@ -2,7 +2,7 @@
   <div>
     <h3>Add new player</h3>
     <p>
-      <%= form_tag("/player") do
+      <%= form_tag("/players") do
         [tag(:input, type: "text", name: "name", placeholder: "Player name", required: true),
         tag(:input, type: "submit", value: "New player")]
       end%>
@@ -21,7 +21,7 @@
 
 <h3>Players</h3>
 <%= for player <- @players do %>
-  <span><%= player.name %>, <%= player.balance %></span><br/>
+  <span><%= player.name %>, <%= player.balance %>, <%= link "Remove", to: Routes.players_path(@conn, :remove, player.id), method: :delete %></span><br/>
 <% end %>
 
 <br />
