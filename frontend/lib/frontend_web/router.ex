@@ -20,6 +20,7 @@ defmodule FrontendWeb.Router do
     get("/", PageController, :index)
     get("/coinflip_room", PageController, :coinflip_room)
     post("/coinflip", PageController, :coinflip)
+    post("/coinflip_room_bet", PageController, :coinflip_room_bet)
   end
 
   scope "/auth", FrontendWeb do
