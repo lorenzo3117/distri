@@ -32,9 +32,7 @@ defmodule FrontendWeb.PageController do
     # TODO should be logged in user
     Casino.bet_coinflip(coinflip_room_id, 1, bet, heads == "heads")
 
-    coinflip = Casino.get_coinflip(coinflip_room_id)
-
-    # TODO should just be the coinflip, not an array, but couldn't fix the heex
-    render(conn, "coinflip_room.html", coinflips: [coinflip])
+    conn
+    |> redirect(to: "/coinflip_room?id=#{coinflip_room_id}")
   end
 end

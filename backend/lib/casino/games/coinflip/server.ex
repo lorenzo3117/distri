@@ -50,7 +50,7 @@ defmodule Casino.Games.Coinflip.Server do
       end)
 
     coinflip = Enum.find(list, &(to_string(&1.id) == coinflip_room_id))
-    Casino.Games.Coinflip.Coinflip.add_player(coinflip_room_id, player_id, bet, heads)
+    Casino.Games.Coinflip.Coinflip.add_player(coinflip.pid, player_id, bet, heads)
 
     Casino.sendMessage("Bet on coinflip: #{player_id} #{bet} #{heads}")
     {:noreply, {coinflips, refs}}
@@ -66,11 +66,41 @@ defmodule Casino.Games.Coinflip.Server do
   end
 
   def handle_info(:take_bet, state) do
-    random_number = :rand.uniform(10)
-    heads = random_number < 5
-    Casino.sendMessage("Bet has been taken: #{heads}")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaad")
+    IO.inspect(state)
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaa")
+    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaad")
 
-    IO.inspect(fn state -> state$1)
+    if state !== {%{}, %{}} do
+      id = state |> elem(0) |> Map.keys() |> Enum.at(0)
+      pid = state |> elem(0) |> Map.values() |> Enum.at(0) |> elem(1)
+
+      random_number = :rand.uniform(10)
+      heads = random_number < 5
+      Casino.sendMessage("Bet has been taken for room #{id}: #{heads}")
+
+      players = Casino.Games.Coinflip.Coinflip.players(pid)
+      winning_players = Enum.filter(players, &(&1.heads == heads))
+      losing_players = Enum.filter(players, &(&1.heads != heads))
+
+      IO.inspect(winning_players)
+      IO.inspect(losing_players)
+
+      Casino.Games.Coinflip.Coinflip.clear_players(pid)
+    end
 
     take_bet()
     {:noreply, state}
@@ -80,7 +110,7 @@ defmodule Casino.Games.Coinflip.Server do
   defp take_bet() do
     # Run every 5 minutes
     # Process.send_after(self(), :take_bet, 5 * 60 * 1000)
-    Process.send_after(self(), :take_bet, 5000)
+    Process.send_after(self(), :take_bet, 30000)
   end
 
   def handle_cast({:add, name}, {coinflips, refs}) do
@@ -110,20 +140,6 @@ defmodule Casino.Games.Coinflip.Server do
 
     coinflip = Enum.find(list, &(to_string(&1.id) == id))
     Casino.sendMessage("Coinflip room found: #{coinflip.name}")
-
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect(coinflip)
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    IO.inspect("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 
     {:reply, coinflip, state}
   end
