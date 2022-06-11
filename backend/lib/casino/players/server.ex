@@ -21,6 +21,10 @@ defmodule Casino.Players.Server do
     GenServer.cast(__MODULE__, {:remove, id})
   end
 
+  def get(id) do
+    GenServer.call(__MODULE__, {:get, id})
+  end
+
   @doc """
   Return all the players as a list
   """
@@ -52,6 +56,16 @@ defmodule Casino.Players.Server do
     Process.exit(pid, :kill)
 
     {:noreply, {players, refs}}
+  end
+
+  def handle_call({:get, id}, _from, {players, refs} = state) do
+    list =
+      Enum.map(players, fn {id, {name, pid, _ref}} ->
+        %{id: id, name: name, balance: Casino.Players.Player.balance(pid)}
+      end)
+
+    player = Enum.find(list, &(to_string(&1.id) == id))
+    {:reply, player, state}
   end
 
   def handle_call({:list}, _from, {players, _refs} = state) do

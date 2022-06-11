@@ -29,6 +29,10 @@ defmodule Casino do
     Casino.Players.Server.remove(id)
   end
 
+  def get_player(id) do
+    Casino.Players.Server.get(id)
+  end
+
   def list_players do
     Casino.Players.Server.list()
   end
