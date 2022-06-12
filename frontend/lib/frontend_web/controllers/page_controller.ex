@@ -2,10 +2,23 @@ defmodule FrontendWeb.PageController do
   use FrontendWeb, :controller
 
   def index(conn, _params) do
-    render(conn, "index.html",
-      players: Casino.list_players(),
-      coinflips: Casino.list_coinflips()
-    )
+    player = conn |> get_session(:current_player)
+
+    if player != nil do
+      new_player = Casino.get_player(player.id)
+
+      conn
+      |> put_session(:current_player, new_player)
+      |> render("index.html",
+        players: Casino.list_players(),
+        coinflips: Casino.list_coinflips()
+      )
+    else
+      render(conn, "index.html",
+        players: Casino.list_players(),
+        coinflips: Casino.list_coinflips()
+      )
+    end
   end
 
   # TODO error handling
@@ -20,8 +33,17 @@ defmodule FrontendWeb.PageController do
   def coinflip_room(conn, %{"id" => id}) do
     coinflip_room = Casino.get_coinflip(id)
 
-    # TODO should just be the coinflip, not an array, but couldn't fix the heex
-    render(conn, "coinflip_room.html", coinflip_rooms: [coinflip_room])
+    player = conn |> get_session(:current_player)
+
+    if player != nil do
+      new_player = Casino.get_player(player.id)
+
+      conn
+      |> put_session(:current_player, new_player)
+      |> render("coinflip_room.html", coinflip_rooms: [coinflip_room])
+    else
+      render(conn, "coinflip_room.html", coinflip_rooms: [coinflip_room])
+    end
   end
 
   def coinflip_room_bet(conn, %{
@@ -30,9 +52,30 @@ defmodule FrontendWeb.PageController do
         "heads" => heads
       }) do
     player = conn |> get_session(:current_player)
-    Casino.bet_coinflip(coinflip_room_id, player, bet, heads == "heads")
+    {bet, rest} = Integer.parse(bet)
 
-    conn
-    |> redirect(to: "/coinflip_room?id=#{coinflip_room_id}")
+    cond do
+      player == nil ->
+        conn
+        |> PhxIzitoast.error("", 'You must be logged in to bet')
+        |> redirect(to: "/coinflip_room?id=#{coinflip_room_id}")
+
+      Casino.get_player(player.id).balance < bet ->
+        conn
+        |> PhxIzitoast.error("", 'You do not have enough money to bet')
+        |> redirect(to: "/coinflip_room?id=#{coinflip_room_id}")
+
+      true ->
+        Casino.bet_coinflip(coinflip_room_id, player, bet, heads == "heads")
+
+        coinflip_room = Casino.get_coinflip(coinflip_room_id)
+
+        conn
+        |> PhxIzitoast.success(
+          "",
+          'Bet successful, you bet #{bet}€ on room #{coinflip_room.name}'
+        )
+        |> redirect(to: "/coinflip_room?id=#{coinflip_room_id}")
+    end
   end
 end

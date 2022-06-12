@@ -9,17 +9,17 @@ defmodule FrontendWeb.PlayersController do
     |> redirect(to: "/")
   end
 
-  # def remove(conn, %{"id" => id}) do
-  #   _pid = Casino.remove_player(id)
+  def remove(conn, %{"id" => id}) do
+    _pid = Casino.remove_player(id)
 
-  #   player = conn |> get_session(:current_player)
+    player = conn |> get_session(:current_player)
 
-  #   if player.id == id do
-  #     conn |> put_session(:current_player, nil)
-  #   end
+    if player.id == id do
+      conn |> put_session(:current_player, nil)
+    end
 
-  #   conn
-  #   |> PhxIzitoast.success("", 'Player removed')
-  #   |> redirect(to: "/")
-  # end
+    conn
+    |> PhxIzitoast.success("", 'Player removed')
+    |> redirect(to: "/")
+  end
 end
