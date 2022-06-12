@@ -1,4 +1,4 @@
-defmodule Receiver do
+defmodule IndexConsumer do
   alias Phoenix.PubSub
 
   def wait_for_messages do
@@ -13,7 +13,7 @@ defmodule Receiver do
 
   defp _wait_for_messages do
     receive do
-      {:basic_deliver, payload, _meta} ->
+      {:basic_deliver, _payload, _meta} ->
         PubSub.broadcast(Frontend.PubSub, "index", {:index_update})
         _wait_for_messages()
     end

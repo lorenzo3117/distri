@@ -16,7 +16,7 @@
           <ul>
             <%= if logged_in(@conn) do %>
                 <span>Logged in as <strong><%= logged_in(@conn).name %></strong></span><br>
-                <span>Your balance: <%= logged_in(@conn).balance %>€</span>
+                <%= live_render(@conn, FrontendWeb.BalanceLive) %>
                 <%= link "Log out", to: Routes.auth_path(@conn, :logout) %>
             <% else %>
               <%= link "Log in", to: Routes.auth_path(@conn, :index) %>
