@@ -96,18 +96,6 @@ defmodule Casino.Games.Coinflip.Server do
   defp take_bet() do
     # Run every 5 minutes
     # Process.send_after(self(), :take_bet, 5 * 60 * 1000)
-    IO.inspect("KILL ME")
-    IO.inspect("KILL ME")
-    IO.inspect("KILL ME")
-    IO.inspect("KILL ME")
-    IO.inspect("KILL ME")
-    IO.inspect("KILL ME")
-    IO.inspect("KILL ME")
-    IO.inspect("KILL ME")
-    IO.inspect("KILL ME")
-    IO.inspect("KILL ME")
-    IO.inspect("KILL ME")
-    IO.inspect("KILL ME")
     Process.send_after(self(), :take_bet, 20000)
   end
 
