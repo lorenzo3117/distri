@@ -24,7 +24,7 @@
           </ul>
           <%= live_render(@conn, FrontendWeb.NotificationLive) %>
         </nav>
-        <h1><%= link("Casino", to: "/") %></h1>
+        <span class="nav-row"><h1><%= link("Casino", to: "/") %></h1><h5><%= link("Logs", to: "/logs") %></h5></span>
       </section>
     </header>
     <%= @inner_content %>

@@ -6,19 +6,22 @@ defmodule Casino do
 
     children = [
       supervisor(Casino.PlayersSupervisor, []),
-      supervisor(Casino.GamesSupervisor, [])
+      supervisor(Casino.GamesSupervisor, []),
+      supervisor(Casino.Logs.Server, [])
     ]
 
     opts = [strategy: :one_for_one, name: Casino.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
-  def log(message) do
+  def log(log) do
+    Casino.Logs.Server.add(log)
+
     {:ok, connection} = AMQP.Connection.open()
     {:ok, channel} = AMQP.Channel.open(connection)
 
     AMQP.Exchange.declare(channel, "log", :direct)
-    AMQP.Basic.publish(channel, "log", "log", message)
+    AMQP.Basic.publish(channel, "log", "log", log)
     AMQP.Connection.close(connection)
   end
 
@@ -88,15 +91,7 @@ defmodule Casino do
     end
   end
 
-  def add_blackjack_table(count \\ 1) do
-    Casino.Games.Blackjack.Server.add_table(count)
-  end
-
-  def remove_blackjack_table do
-    Casino.Games.Blackjack.Server.remove_table()
-  end
-
-  def count_blackjack_tables do
-    Casino.Games.Blackjack.Server.count_tables()
+  def get_logs() do
+    Casino.Logs.Server.list()
   end
 end

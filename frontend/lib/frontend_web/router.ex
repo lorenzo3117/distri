@@ -19,6 +19,7 @@ defmodule FrontendWeb.Router do
 
     live("/", IndexLive, :index)
     live("/coinflip_room/:id", CoinflipRoomLive, :coinflip_room)
+    live("/logs", LogsLive, :logs)
   end
 
   scope "/auth", FrontendWeb do
