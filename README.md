@@ -52,19 +52,9 @@ guest
 guest
 ```
 
-## Backend
-
-Go to 'backend' directory and execute following commands:
-
-```elixir
-mix deps.get
-iex -S mix
-```
-
 ## Frontend
 
-Go to 'frontend' directory and execute following commands:
-**Note:** You are only required to start the frontend as it is connected to the backend and starts that part on its own.
+Go to the 'frontend' directory and execute following commands:
 
 ```elixir
 mix deps.get
@@ -72,3 +62,14 @@ iex -S mix phx.server #mix phx.server
 ```
 
 Go to [localhost:4000](http://localhost:4000)
+
+## Backend (optional)
+
+**Note:** You are only required to start the frontend as it is connected to the backend and starts that part on its own.
+
+Go to the 'backend' directory and execute following commands:
+
+```elixir
+mix deps.get
+iex -S mix
+```
