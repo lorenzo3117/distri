@@ -1,0 +1,11 @@
+<%= if @notif_status do %>
+  <section class="notification">
+    <div class="notification-header">
+      <a phx-click="close-notif">Close</a>
+      <strong>Notification</strong>
+    </div>
+    <div class="notification-body">
+      <%= @message %>
+    </div>
+  </section>
+<% end %>

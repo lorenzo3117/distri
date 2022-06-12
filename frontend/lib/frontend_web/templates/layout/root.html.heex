@@ -21,13 +21,8 @@
             <% else %>
               <%= link "Log in", to: Routes.auth_path(@conn, :index) %>
             <% end %>
-
-            <!--
-            <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
-              <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
-            <% end %>
-            -->
           </ul>
+          <%= live_render(@conn, FrontendWeb.NotificationLive) %>
         </nav>
         <h1><%= link("Casino", to: "/") %></h1>
       </section>

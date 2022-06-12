@@ -13,8 +13,13 @@ defmodule IndexConsumer do
 
   defp _wait_for_messages do
     receive do
-      {:basic_deliver, _payload, _meta} ->
-        PubSub.broadcast(Frontend.PubSub, "index", {:index_update})
+      {:basic_deliver, payload, _meta} ->
+        if payload != nil do
+          PubSub.broadcast(Frontend.PubSub, "index", {:index_update, payload})
+        else
+          PubSub.broadcast(Frontend.PubSub, "index", {:index_update})
+        end
+
         _wait_for_messages()
     end
   end
