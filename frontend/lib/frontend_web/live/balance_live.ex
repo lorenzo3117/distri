@@ -19,6 +19,10 @@ defmodule FrontendWeb.BalanceLive do
   end
 
   defp fetch(socket, player) do
-    assign(socket, balance: player.balance)
+    if player == nil do
+      assign(socket, balance: 0)
+    else
+      assign(socket, balance: player.balance)
+    end
   end
 end
