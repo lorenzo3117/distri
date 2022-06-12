@@ -1,8 +1,14 @@
 <div class="container">
   <h3>Logs</h3>  
   <ul>
-    <%= for log <- @logs do %>
-      <li><%= log %></li>
+    <%= if (length @logs) == 0 do %>
+      <span>No logs yet</span><br/>
+    <% else %>
+      <ul>
+        <%= for log <- @logs do %>
+        <li><%= log %></li>
+        <% end %>
+      </ul>
     <% end %>
   </ul>
 </div>

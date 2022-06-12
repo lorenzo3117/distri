@@ -10,8 +10,16 @@ h3 {
   margin-bottom: 8px;
 }
 
-h5 {
+h6 {
   margin: 0;
+}
+
+.nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row-reverse;
+  gap: 16px;
 }
 
 .bet-timer {
@@ -38,12 +46,8 @@ h5 {
   margin-bottom: 0;
 }
 
-.nav-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-direction: row-reverse;
-  gap: 16px;
+.pointer {
+  cursor: pointer;
 }
 
 /* Alerts and form errors used by phx.new */

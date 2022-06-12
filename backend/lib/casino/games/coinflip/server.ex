@@ -42,6 +42,13 @@ defmodule Casino.Games.Coinflip.Server do
     GenServer.cast(__MODULE__, {:bet, coinflip_room_id, player_id, bet, heads})
   end
 
+  # https://stackoverflow.com/questions/32085258/how-can-i-schedule-code-to-run-every-few-hours-in-elixir-or-phoenix-framework
+  defp take_bet() do
+    # Run every 5 minutes
+    # Process.send_after(self(), :take_bet, 5 * 60 * 1000)
+    Process.send_after(self(), :take_bet, 20000)
+  end
+
   # Server
 
   def init(:ok) do
@@ -49,54 +56,6 @@ defmodule Casino.Games.Coinflip.Server do
     refs = %{}
     take_bet()
     {:ok, {coinflips, refs}}
-  end
-
-  def handle_info(:take_bet, state) do
-    if state !== {%{}, %{}} do
-      # For every coinflip room
-      for {id, {name, pid, _ref}} <- state |> elem(0) do
-        # Take a bet
-        random_number = :rand.uniform(10)
-        heads = random_number < 5
-
-        # Get winning and losing players
-        players = Casino.Games.Coinflip.Coinflip.players(pid)
-        winning_players = Enum.filter(players, &(&1.heads == heads))
-        losing_players = Enum.filter(players, &(&1.heads != heads))
-
-        # Update winning players balance
-        Casino.Players.Server.deposit_to_players(winning_players)
-
-        # Send messages
-        Casino.send_message("Taking bet for room #{name}: #{heads}", "coinflip_room")
-        Casino.send_message("Update player list on index page", "index")
-
-        for player <- winning_players do
-          Casino.send_notification("#{player.id}.You won #{player.bet * 2} in room #{name}")
-
-          Casino.send_message("Balance update for #{player.name}: #{player.bet * 2}", "balance")
-          Casino.log("Player #{player.name} won #{player.bet * 2} in room #{name}")
-        end
-
-        for player <- losing_players do
-          Casino.send_notification("#{player.id}.You lost #{player.bet} in room #{name}")
-
-          Casino.log("Player #{player.name} lost #{player.bet} in room #{name}")
-        end
-
-        Casino.Games.Coinflip.Coinflip.clear_state(pid)
-      end
-    end
-
-    take_bet()
-    {:noreply, state}
-  end
-
-  # https://stackoverflow.com/questions/32085258/how-can-i-schedule-code-to-run-every-few-hours-in-elixir-or-phoenix-framework
-  defp take_bet() do
-    # Run every 5 minutes
-    # Process.send_after(self(), :take_bet, 5 * 60 * 1000)
-    Process.send_after(self(), :take_bet, 20000)
   end
 
   def handle_cast({:add, name}, {coinflips, refs}) do
@@ -107,14 +66,18 @@ defmodule Casino.Games.Coinflip.Server do
     id = auto_increment(coinflips)
     refs = Map.put(refs, ref, id)
     coinflips = Map.put(coinflips, id, {name, pid, ref})
+
     Casino.send_message("Coinflip room added: #{name}", "index")
+
     {:noreply, {coinflips, refs}}
   end
 
   def handle_cast({:remove, id}, {coinflips, refs}) do
-    {{_name, pid, _ref}, coinflips} = Map.pop(coinflips, id)
+    {{name, pid, _ref}, coinflips} = Map.pop(coinflips, id)
 
     Process.exit(pid, :kill)
+
+    Casino.log("Coinflip room removed: #{name}")
 
     {:noreply, {coinflips, refs}}
   end
@@ -153,16 +116,61 @@ defmodule Casino.Games.Coinflip.Server do
   def handle_cast({:bet, coinflip_room_id, player, bet, heads}, {coinflips, refs}) do
     # TODO should use coinflips and not convert to list
     list =
-      Enum.map(coinflips, fn {id, {_name, pid, _ref}} ->
-        %{id: id, pid: pid}
+      Enum.map(coinflips, fn {id, {name, pid, _ref}} ->
+        %{id: id, name: name, pid: pid}
       end)
 
-    coinflip = Enum.find(list, &(to_string(&1.id) == to_string(coinflip_room_id)))
-    Casino.Games.Coinflip.Coinflip.add_player(coinflip.pid, player, bet, heads)
+    coinflip_room = Enum.find(list, &(to_string(&1.id) == to_string(coinflip_room_id)))
+    Casino.Games.Coinflip.Coinflip.add_player(coinflip_room.pid, player, bet, heads)
 
-    Casino.send_message("Bet on coinflip: #{player.name} #{bet} #{heads}", "coinflip_room")
+    Casino.send_message(
+      "Bet in coinflip room #{coinflip_room.name} by #{player.name} (#{bet} on #{heads})",
+      "coinflip_room"
+    )
 
     {:noreply, {coinflips, refs}}
+  end
+
+  def handle_info(:take_bet, state) do
+    if state !== {%{}, %{}} do
+      # For every coinflip room
+      for {id, {name, pid, _ref}} <- state |> elem(0) do
+        # Take a bet
+        random_number = :rand.uniform(10)
+        heads = random_number < 5
+
+        # Get winning and losing players
+        players = Casino.Games.Coinflip.Coinflip.players(pid)
+        winning_players = Enum.filter(players, &(&1.heads == heads))
+        losing_players = Enum.filter(players, &(&1.heads != heads))
+
+        # Update winning players balance
+        Casino.Players.Server.deposit_to_players(winning_players)
+
+        # Send messages
+        Casino.send_message("Taking bet for room #{name}: #{heads}", "coinflip_room")
+        Casino.send_message("Update player list on index page", "index")
+
+        for player <- winning_players do
+          Casino.send_notification("#{player.id}.You won #{player.bet * 2} in room #{name}")
+
+          Casino.send_message("Balance updated for #{player.name}: #{player.bet * 2}", "balance")
+          Casino.log("Player #{player.name} won #{player.bet * 2} in room #{name}")
+        end
+
+        for player <- losing_players do
+          Casino.send_notification("#{player.id}.You lost #{player.bet} in room #{name}")
+
+          Casino.log("Player #{player.name} lost #{player.bet} in room #{name}")
+        end
+
+        Casino.Games.Coinflip.Coinflip.clear_state(pid)
+        Casino.log("Clear room #{name}")
+      end
+    end
+
+    take_bet()
+    {:noreply, state}
   end
 
   def handle_info({:DOWN, ref, :process, _pid, _reason}, {coinflips, refs}) do

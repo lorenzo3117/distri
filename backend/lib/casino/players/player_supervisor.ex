@@ -5,12 +5,13 @@ defmodule Casino.Players.PlayerSupervisor do
     Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
-  def init(:ok) do
+  def init(_init_arg) do
     children = [
       worker(Casino.Players.Player, [], restart: :temporary)
     ]
 
-    supervise(children, strategy: :simple_one_for_one)
+    opts = [strategy: :simple_one_for_one]
+    Supervisor.init(children, opts)
   end
 
   def new_player(balance) do

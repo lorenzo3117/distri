@@ -7,7 +7,7 @@ defmodule Casino do
     children = [
       supervisor(Casino.PlayersSupervisor, []),
       supervisor(Casino.GamesSupervisor, []),
-      supervisor(Casino.Logs.Server, [])
+      worker(Casino.Logs.Server, [])
     ]
 
     opts = [strategy: :one_for_one, name: Casino.Supervisor]

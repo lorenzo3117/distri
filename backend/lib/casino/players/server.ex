@@ -54,6 +54,7 @@ defmodule Casino.Players.Server do
   def init(:ok) do
     players = %{}
     refs = %{}
+    Casino.log("Initializing players")
     {:ok, {players, refs}}
   end
 
@@ -63,7 +64,9 @@ defmodule Casino.Players.Server do
     id = auto_increment(players)
     refs = Map.put(refs, ref, id)
     players = Map.put(players, id, {name, pid, ref})
+
     Casino.send_message("Player added: #{name}", "index")
+
     {:noreply, {players, refs}}
   end
 
@@ -76,6 +79,8 @@ defmodule Casino.Players.Server do
     player = Enum.find(list, &(to_string(&1.id) == to_string(player_id)))
 
     Process.exit(player.pid, :kill)
+
+    Casino.log("Player removed: #{player.name}")
 
     {:noreply, {players, refs}}
   end
@@ -110,7 +115,7 @@ defmodule Casino.Players.Server do
 
     Casino.Players.Player.bet(player.pid, bet)
 
-    Casino.send_message("Balance update for #{player.name}: -#{bet}", "balance")
+    Casino.send_message("Balance updated for #{player.name}: -#{bet}", "balance")
     Casino.send_message("Update player list on index page", "index", false)
 
     {:noreply, {players, refs}}
@@ -133,6 +138,7 @@ defmodule Casino.Players.Server do
   def handle_info({:DOWN, ref, :process, _pid, _reason}, {players, refs}) do
     {id, refs} = Map.pop(refs, ref)
     players = Map.delete(players, id)
+
     {:noreply, {players, refs}}
   end
 

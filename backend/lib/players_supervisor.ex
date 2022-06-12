@@ -1,4 +1,4 @@
-defmodule Casino.GamesSupervisor do
+defmodule Casino.PlayersSupervisor do
   use Supervisor
 
   def start_link do
@@ -7,8 +7,8 @@ defmodule Casino.GamesSupervisor do
 
   def init(:ok) do
     children = [
-      worker(Casino.Games.Coinflip.Server, []),
-      supervisor(Casino.Games.Coinflip.CoinflipSupervisor, [])
+      worker(Casino.Players.Server, []),
+      supervisor(Casino.Players.PlayerSupervisor, [])
     ]
 
     supervise(children, strategy: :rest_for_one)
