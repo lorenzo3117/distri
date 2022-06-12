@@ -13,8 +13,10 @@ defmodule Casino.Games.Coinflip.Coinflip do
   @doc """
   Add player
   """
-  def add_player(pid, player_id, bet, heads) do
-    Agent.update(pid, fn players -> players ++ [%{id: player_id, bet: bet, heads: heads}] end)
+  def add_player(pid, player, bet, heads) do
+    Agent.update(pid, fn players ->
+      players ++ [%{id: player.id, name: player.name, bet: bet, heads: heads}]
+    end)
   end
 
   @doc """

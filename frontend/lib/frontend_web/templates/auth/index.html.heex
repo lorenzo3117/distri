@@ -1,15 +1,15 @@
 <div class="d-flex">
   <div>
     <h3>Authentication</h3>
-    <p>
     <%= if length(@players) == 0 do %>
       <span>No players found</span>
     <% else %>
       <p>Log in as: </p>
-      <%= for player <- @players do %>
-        <span><%= link player.name, to: Routes.auth_path(@conn, :login, player.id) %></span><br>
-      <% end %>
+      <ul>
+        <%= for player <- @players do %>
+          <li><%= link player.name, to: Routes.auth_path(@conn, :login, player.id) %></li>
+        <% end %>
+      </ul>
     <% end %>
-    </p>
   </div>
 </div>

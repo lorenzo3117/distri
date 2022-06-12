@@ -53,8 +53,11 @@ defmodule Casino do
     Casino.Games.Coinflip.Server.get(id)
   end
 
-  def bet_coinflip(coinflip_room_id, player_id, bet, heads) do
-    Casino.Games.Coinflip.Server.bet(coinflip_room_id, player_id, bet, heads)
+  def bet_coinflip(coinflip_room_id, player, bet, heads) do
+    if player.balance >= bet do
+      Casino.Games.Coinflip.Server.bet(coinflip_room_id, player, bet, heads)
+      Casino.Players.Server.bet(player.id, bet)
+    end
   end
 
   def add_blackjack_table(count \\ 1) do

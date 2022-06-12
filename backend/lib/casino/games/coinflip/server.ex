@@ -42,7 +42,7 @@ defmodule Casino.Games.Coinflip.Server do
     GenServer.cast(__MODULE__, {:bet, coinflip_room_id, player_id, bet, heads})
   end
 
-  def handle_cast({:bet, coinflip_room_id, player_id, bet, heads}, {coinflips, refs}) do
+  def handle_cast({:bet, coinflip_room_id, player, bet, heads}, {coinflips, refs}) do
     # TODO should use coinflips and not convert to list
     list =
       Enum.map(coinflips, fn {id, {name, pid, _ref}} ->
@@ -50,9 +50,9 @@ defmodule Casino.Games.Coinflip.Server do
       end)
 
     coinflip = Enum.find(list, &(to_string(&1.id) == coinflip_room_id))
-    Casino.Games.Coinflip.Coinflip.add_player(coinflip.pid, player_id, bet, heads)
+    Casino.Games.Coinflip.Coinflip.add_player(coinflip.pid, player, bet, heads)
 
-    Casino.sendMessage("Bet on coinflip: #{player_id} #{bet} #{heads}")
+    Casino.sendMessage("Bet on coinflip: #{player.name} #{bet} #{heads}")
     {:noreply, {coinflips, refs}}
   end
 
@@ -67,17 +67,30 @@ defmodule Casino.Games.Coinflip.Server do
 
   def handle_info(:take_bet, state) do
     if state !== {%{}, %{}} do
-      for {id, {_name, pid, _ref}} <- state |> elem(0) do
+      # For every coinflip room
+      for {id, {name, pid, _ref}} <- state |> elem(0) do
+        # Take a bet
         random_number = :rand.uniform(10)
         heads = random_number < 5
-        Casino.sendMessage("Taking bet for room #{id}: #{heads}")
 
+        # Get winning and losing players
         players = Casino.Games.Coinflip.Coinflip.players(pid)
         winning_players = Enum.filter(players, &(&1.heads == heads))
         losing_players = Enum.filter(players, &(&1.heads != heads))
 
-        IO.inspect(winning_players)
-        IO.inspect(losing_players)
+        # Update winning players balance
+        Casino.Players.Server.deposit_to_players(winning_players)
+
+        # Send messages
+        Casino.sendMessage("Taking bet for room #{name}: #{heads}")
+
+        for player <- winning_players do
+          Casino.sendMessage("Player #{player.name} won #{player.bet * 2} in room #{name}")
+        end
+
+        for player <- losing_players do
+          Casino.sendMessage("Player #{player.name} lost #{player.bet} in room #{name}")
+        end
 
         Casino.Games.Coinflip.Coinflip.clear_players(pid)
       end
