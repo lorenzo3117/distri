@@ -1,0 +1,30 @@
+<h2>Coinflip room: <%= @coinflip_room.name %></h2>
+
+<div class="bet-timer">
+  <h3>Time until next bet</h3>  
+  <h1>04:59</h1>
+</div>
+
+<%= if @player != nil do %>
+    <form phx-submit="bet">
+      <input type="number" name="bet" placeholder="Bet" required>
+      <label for="heads">Heads</label>
+      <input type="radio" name="heads" placeholder="Heads" value="heads" checked required>
+      <label for="heads">Tails</label>
+      <input type="radio" name="heads" placeholder="Tails" value="tails" required>
+      <input type="submit" value="Place bet">
+    </form>
+<% else %>
+    <p>You must be logged in to bet: TODO</p>
+<% end %>
+
+<h3>Players</h3>
+<%= if (length @coinflip_room.players ) == 0 do %>
+  <span>No players yet</span><br/>
+<% else %>
+  <ul>
+    <%= for player <- @coinflip_room.players do %>
+        <span><%= player.name %>: <%= player.bet %>€ on <%= if player.heads == true do %>heads<%= else %>tails<%= end %></span><br/>
+    <% end %>
+  </ul>
+<% end %>

@@ -13,11 +13,11 @@ defmodule Casino do
     Supervisor.start_link(children, opts)
   end
 
-  def sendMessage(message) do
+  def sendMessage(message, channel_name) do
     {:ok, connection} = AMQP.Connection.open()
     {:ok, channel} = AMQP.Channel.open(connection)
-    AMQP.Queue.declare(channel, "hello")
-    AMQP.Basic.publish(channel, "", "hello", message)
+    AMQP.Queue.declare(channel, channel_name)
+    AMQP.Basic.publish(channel, "", channel_name, message)
     AMQP.Connection.close(connection)
   end
 
@@ -54,6 +54,7 @@ defmodule Casino do
   end
 
   def bet_coinflip(coinflip_room_id, player, bet, heads) do
+    # Should be checked from get player from server
     if player.balance >= bet do
       Casino.Games.Coinflip.Server.bet(coinflip_room_id, player, bet, heads)
       Casino.Players.Server.bet(player.id, bet)

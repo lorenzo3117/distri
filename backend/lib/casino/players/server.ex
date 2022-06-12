@@ -63,7 +63,7 @@ defmodule Casino.Players.Server do
     id = auto_increment(players)
     refs = Map.put(refs, ref, id)
     players = Map.put(players, id, {name, pid, ref})
-    Casino.sendMessage("Player added: #{name}")
+    Casino.sendMessage("Player added: #{name}", "index")
     {:noreply, {players, refs}}
   end
 
@@ -120,9 +120,7 @@ defmodule Casino.Players.Server do
       end)
 
     for player_to_update <- players_to_update do
-      IO.inspect(player_to_update)
       player = Enum.find(list, &(to_string(&1.id) == to_string(player_to_update.id)))
-      IO.inspect(player.pid)
       Casino.Players.Player.deposit(player.pid, player_to_update.bet * 2)
     end
 

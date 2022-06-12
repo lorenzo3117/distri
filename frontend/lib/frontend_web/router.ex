@@ -17,11 +17,8 @@ defmodule FrontendWeb.Router do
   scope "/", FrontendWeb do
     pipe_through(:browser)
 
-    live("/test", PageLive, :index)
-    get("/", PageController, :index)
-    get("/coinflip_room", PageController, :coinflip_room)
-    post("/coinflip", PageController, :coinflip)
-    post("/coinflip_room_bet", PageController, :coinflip_room_bet)
+    live("/", IndexLive, :index)
+    live("/coinflip_room/:id", CoinflipRoomLive, :coinflip_room)
   end
 
   scope "/auth", FrontendWeb do

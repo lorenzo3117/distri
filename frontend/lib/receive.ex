@@ -1,6 +1,8 @@
 defmodule Receiver do
+  alias Phoenix.PubSub
+
   def wait_for_messages do
-    channel_name = "hello"
+    channel_name = "index"
     {:ok, connection} = AMQP.Connection.open()
     {:ok, channel} = AMQP.Channel.open(connection)
     AMQP.Queue.declare(channel, channel_name)
@@ -12,7 +14,7 @@ defmodule Receiver do
   defp _wait_for_messages do
     receive do
       {:basic_deliver, payload, _meta} ->
-        IO.puts(payload)
+        PubSub.broadcast(Frontend.PubSub, "index", {:index_update})
         _wait_for_messages()
     end
   end

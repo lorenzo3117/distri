@@ -45,14 +45,14 @@ defmodule Casino.Games.Coinflip.Server do
   def handle_cast({:bet, coinflip_room_id, player, bet, heads}, {coinflips, refs}) do
     # TODO should use coinflips and not convert to list
     list =
-      Enum.map(coinflips, fn {id, {name, pid, _ref}} ->
+      Enum.map(coinflips, fn {id, {_name, pid, _ref}} ->
         %{id: id, pid: pid}
       end)
 
-    coinflip = Enum.find(list, &(to_string(&1.id) == coinflip_room_id))
+    coinflip = Enum.find(list, &(to_string(&1.id) == to_string(coinflip_room_id)))
     Casino.Games.Coinflip.Coinflip.add_player(coinflip.pid, player, bet, heads)
 
-    Casino.sendMessage("Bet on coinflip: #{player.name} #{bet} #{heads}")
+    Casino.sendMessage("Bet on coinflip: #{player.name} #{bet} #{heads}", "index")
     {:noreply, {coinflips, refs}}
   end
 
@@ -82,14 +82,20 @@ defmodule Casino.Games.Coinflip.Server do
         Casino.Players.Server.deposit_to_players(winning_players)
 
         # Send messages
-        Casino.sendMessage("Taking bet for room #{name}: #{heads}")
+        Casino.sendMessage("Taking bet for room #{name}: #{heads}", "index")
 
         for player <- winning_players do
-          Casino.sendMessage("Player #{player.name} won #{player.bet * 2} in room #{name}")
+          Casino.sendMessage(
+            "Player #{player.name} won #{player.bet * 2} in room #{name}",
+            "coinflip_room_user"
+          )
         end
 
         for player <- losing_players do
-          Casino.sendMessage("Player #{player.name} lost #{player.bet} in room #{name}")
+          Casino.sendMessage(
+            "Player #{player.name} lost #{player.bet} in room #{name}",
+            "coinflip_room_user"
+          )
         end
 
         Casino.Games.Coinflip.Coinflip.clear_players(pid)
@@ -104,7 +110,7 @@ defmodule Casino.Games.Coinflip.Server do
   defp take_bet() do
     # Run every 5 minutes
     # Process.send_after(self(), :take_bet, 5 * 60 * 1000)
-    Process.send_after(self(), :take_bet, 15000)
+    Process.send_after(self(), :take_bet, 30000)
   end
 
   def handle_cast({:add, name}, {coinflips, refs}) do
@@ -113,7 +119,7 @@ defmodule Casino.Games.Coinflip.Server do
     id = auto_increment(coinflips)
     refs = Map.put(refs, ref, id)
     coinflips = Map.put(coinflips, id, {name, pid, ref})
-    Casino.sendMessage("Coinflip room added: #{name}")
+    Casino.sendMessage("Coinflip room added: #{name}", "index")
     {:noreply, {coinflips, refs}}
   end
 
@@ -132,8 +138,7 @@ defmodule Casino.Games.Coinflip.Server do
         %{id: id, name: name, players: Casino.Games.Coinflip.Coinflip.players(pid)}
       end)
 
-    coinflip = Enum.find(list, &(to_string(&1.id) == id))
-    Casino.sendMessage("Coinflip room found: #{coinflip.name}")
+    coinflip = Enum.find(list, &(to_string(&1.id) == to_string(id)))
 
     {:reply, coinflip, state}
   end

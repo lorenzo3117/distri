@@ -8,10 +8,10 @@ defmodule Frontend.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
-      FrontendWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: Frontend.PubSub},
+      # Start the Telemetry supervisor
+      FrontendWeb.Telemetry,
       # Start the Endpoint (http/https)
       FrontendWeb.Endpoint
       # Start a worker by calling: Frontend.Worker.start_link(arg)
