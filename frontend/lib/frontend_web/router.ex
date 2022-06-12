@@ -17,6 +17,7 @@ defmodule FrontendWeb.Router do
   scope "/", FrontendWeb do
     pipe_through(:browser)
 
+    live("/test", PageLive, :index)
     get("/", PageController, :index)
     get("/coinflip_room", PageController, :coinflip_room)
     post("/coinflip", PageController, :coinflip)

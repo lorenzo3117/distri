@@ -1,0 +1,9 @@
+<h3>Players</h3>
+<form phx-submit="add_player">
+    <input type="text" name="name" placeholder="Player">
+    <input type="submit" value="Add">
+</form>
+
+<%= for player <- @players do %>
+  <span><%= player.name %>, <%= player.balance %></span><br/>
+<% end %>

@@ -7,7 +7,7 @@ defmodule Casino.Players.Player do
   Check the balance
   """
   def balance(pid) do
-    Agent.get(pid, &(&1))
+    Agent.get(pid, & &1)
   end
 
   @doc """
