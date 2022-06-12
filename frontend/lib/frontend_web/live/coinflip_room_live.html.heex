@@ -2,11 +2,11 @@
 
 <div class="bet-timer">
   <h3>Time until next bet</h3>  
-  <h1>04:59</h1>
+  <h1><%= @time_remaining %></h1>
 </div>
 
 <%= if @player != nil do %>
-    <form phx-submit="bet">
+    <form phx-submit="bet" class="bet-form">
       <input type="number" name="bet" placeholder="Bet" required>
       <label for="heads">Heads</label>
       <input type="radio" name="heads" placeholder="Heads" value="heads" checked required>
@@ -15,7 +15,7 @@
       <input type="submit" value="Place bet">
     </form>
 <% else %>
-    <p>You must be logged in to bet: TODO</p>
+    <p>You must be logged in to bet: <%= link("log in", to: "/auth/") %></p>
 <% end %>
 
 <h3>Players</h3>

@@ -42,20 +42,6 @@ defmodule Casino.Games.Coinflip.Server do
     GenServer.cast(__MODULE__, {:bet, coinflip_room_id, player_id, bet, heads})
   end
 
-  def handle_cast({:bet, coinflip_room_id, player, bet, heads}, {coinflips, refs}) do
-    # TODO should use coinflips and not convert to list
-    list =
-      Enum.map(coinflips, fn {id, {_name, pid, _ref}} ->
-        %{id: id, pid: pid}
-      end)
-
-    coinflip = Enum.find(list, &(to_string(&1.id) == to_string(coinflip_room_id)))
-    Casino.Games.Coinflip.Coinflip.add_player(coinflip.pid, player, bet, heads)
-
-    Casino.sendMessage("Bet on coinflip: #{player.name} #{bet} #{heads}", "index")
-    {:noreply, {coinflips, refs}}
-  end
-
   # Server
 
   def init(:ok) do
@@ -98,7 +84,7 @@ defmodule Casino.Games.Coinflip.Server do
           )
         end
 
-        Casino.Games.Coinflip.Coinflip.clear_players(pid)
+        Casino.Games.Coinflip.Coinflip.clear_state(pid)
       end
     end
 
@@ -110,11 +96,25 @@ defmodule Casino.Games.Coinflip.Server do
   defp take_bet() do
     # Run every 5 minutes
     # Process.send_after(self(), :take_bet, 5 * 60 * 1000)
-    Process.send_after(self(), :take_bet, 30000)
+    IO.inspect("KILL ME")
+    IO.inspect("KILL ME")
+    IO.inspect("KILL ME")
+    IO.inspect("KILL ME")
+    IO.inspect("KILL ME")
+    IO.inspect("KILL ME")
+    IO.inspect("KILL ME")
+    IO.inspect("KILL ME")
+    IO.inspect("KILL ME")
+    IO.inspect("KILL ME")
+    IO.inspect("KILL ME")
+    IO.inspect("KILL ME")
+    Process.send_after(self(), :take_bet, 20000)
   end
 
   def handle_cast({:add, name}, {coinflips, refs}) do
-    {:ok, pid} = Casino.Games.Coinflip.CoinflipSupervisor.new_coinflip([])
+    {:ok, pid} =
+      Casino.Games.Coinflip.CoinflipSupervisor.new_coinflip([], Time.add(Time.utc_now(), 20))
+
     ref = Process.monitor(pid)
     id = auto_increment(coinflips)
     refs = Map.put(refs, ref, id)
@@ -135,7 +135,12 @@ defmodule Casino.Games.Coinflip.Server do
     # TODO should use coinflips and not convert to list
     list =
       Enum.map(coinflips, fn {id, {name, pid, _ref}} ->
-        %{id: id, name: name, players: Casino.Games.Coinflip.Coinflip.players(pid)}
+        %{
+          id: id,
+          name: name,
+          players: Casino.Games.Coinflip.Coinflip.players(pid),
+          time: Casino.Games.Coinflip.Coinflip.time(pid)
+        }
       end)
 
     coinflip = Enum.find(list, &(to_string(&1.id) == to_string(id)))
@@ -146,10 +151,30 @@ defmodule Casino.Games.Coinflip.Server do
   def handle_call({:list}, _from, {coinflips, _refs} = state) do
     list =
       Enum.map(coinflips, fn {id, {name, pid, _ref}} ->
-        %{id: id, name: name, players: Casino.Games.Coinflip.Coinflip.players(pid)}
+        %{
+          id: id,
+          name: name,
+          players: Casino.Games.Coinflip.Coinflip.players(pid),
+          time: Casino.Games.Coinflip.Coinflip.time(pid)
+        }
       end)
 
     {:reply, list, state}
+  end
+
+  def handle_cast({:bet, coinflip_room_id, player, bet, heads}, {coinflips, refs}) do
+    # TODO should use coinflips and not convert to list
+    list =
+      Enum.map(coinflips, fn {id, {_name, pid, _ref}} ->
+        %{id: id, pid: pid}
+      end)
+
+    coinflip = Enum.find(list, &(to_string(&1.id) == to_string(coinflip_room_id)))
+    Casino.Games.Coinflip.Coinflip.add_player(coinflip.pid, player, bet, heads)
+
+    Casino.sendMessage("Bet on coinflip: #{player.name} #{bet} #{heads}", "index")
+
+    {:noreply, {coinflips, refs}}
   end
 
   def handle_info({:DOWN, ref, :process, _pid, _reason}, {coinflips, refs}) do
