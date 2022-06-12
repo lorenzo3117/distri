@@ -17,7 +17,7 @@ defmodule FrontendWeb.IndexLive do
     {:noreply, fetch(socket)}
   end
 
-  def handle_info({:index_update}, socket) do
+  def handle_info({:index, _message}, socket) do
     {:noreply, fetch(socket)}
   end
 

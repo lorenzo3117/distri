@@ -47,15 +47,3 @@ config :phoenix, :json_library, Jason
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
-
-# Toast notifications
-# bottomRight, bottomLeft, topRight, topLeft, topCenter,
-config :phx_izitoast, :opts,
-  # dark,
-  position: "topRight",
-  theme: "light",
-  timeout: 5000,
-  close: true,
-  titleSize: 18,
-  messageSize: 18,
-  progressBar: true

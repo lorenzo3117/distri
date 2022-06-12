@@ -63,7 +63,7 @@ defmodule Casino.Players.Server do
     id = auto_increment(players)
     refs = Map.put(refs, ref, id)
     players = Map.put(players, id, {name, pid, ref})
-    Casino.sendMessage("Player added: #{name}", "index")
+    Casino.send_message("Player added: #{name}", "index")
     {:noreply, {players, refs}}
   end
 
@@ -102,13 +102,16 @@ defmodule Casino.Players.Server do
 
   def handle_cast({:bet, player_id, bet}, {players, refs}) do
     list =
-      Enum.map(players, fn {id, {_name, pid, _ref}} ->
-        %{id: id, pid: pid}
+      Enum.map(players, fn {id, {name, pid, _ref}} ->
+        %{id: id, pid: pid, name: name}
       end)
 
     player = Enum.find(list, &(to_string(&1.id) == to_string(player_id)))
 
     Casino.Players.Player.bet(player.pid, bet)
+
+    Casino.send_message("Balance update for #{player.name}: -#{bet}", "balance")
+    Casino.send_message("Update player list on index page", "index", false)
 
     {:noreply, {players, refs}}
   end

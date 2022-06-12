@@ -13,12 +13,39 @@ defmodule Casino do
     Supervisor.start_link(children, opts)
   end
 
-  def sendMessage(message, channel_name) do
+  def log(message) do
     {:ok, connection} = AMQP.Connection.open()
     {:ok, channel} = AMQP.Channel.open(connection)
-    AMQP.Queue.declare(channel, channel_name)
-    AMQP.Basic.publish(channel, "", channel_name, message)
+
+    AMQP.Exchange.declare(channel, "log", :direct)
+    AMQP.Basic.publish(channel, "log", "log", message)
     AMQP.Connection.close(connection)
+  end
+
+  def send_message(message, topic, log \\ true) do
+    {:ok, connection} = AMQP.Connection.open()
+    {:ok, channel} = AMQP.Channel.open(connection)
+
+    AMQP.Exchange.declare(channel, "frontend", :direct)
+    AMQP.Basic.publish(channel, "frontend", topic, message)
+    AMQP.Connection.close(connection)
+
+    if log == true do
+      log(message)
+    end
+  end
+
+  def send_notification(message, log \\ false) do
+    {:ok, connection} = AMQP.Connection.open()
+    {:ok, channel} = AMQP.Channel.open(connection)
+
+    AMQP.Exchange.declare(channel, "notification", :direct)
+    AMQP.Basic.publish(channel, "notification", "notification", message)
+    AMQP.Connection.close(connection)
+
+    if log == true do
+      log(message)
+    end
   end
 
   def add_player(name, balance) do

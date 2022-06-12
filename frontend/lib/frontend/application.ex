@@ -23,7 +23,7 @@ defmodule Frontend.Application do
     opts = [strategy: :one_for_one, name: Frontend.Supervisor]
     Supervisor.start_link(children, opts)
 
-    IndexConsumer.wait_for_messages()
+    Consumer.wait_for_messages()
   end
 
   # Tell Phoenix to update the endpoint configuration

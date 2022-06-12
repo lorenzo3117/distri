@@ -68,20 +68,20 @@ defmodule Casino.Games.Coinflip.Server do
         Casino.Players.Server.deposit_to_players(winning_players)
 
         # Send messages
-        Casino.sendMessage("Taking bet for room #{name}: #{heads}", "index")
+        Casino.send_message("Taking bet for room #{name}: #{heads}", "coinflip_room")
+        Casino.send_message("Update player list on index page", "index")
 
         for player <- winning_players do
-          Casino.sendMessage(
-            "Player #{player.name} won #{player.bet * 2} in room #{name}",
-            "coinflip_room_user"
-          )
+          Casino.send_notification("#{player.id}.You won #{player.bet * 2} in room #{name}")
+
+          Casino.send_message("Balance update for #{player.name}: #{player.bet * 2}", "balance")
+          Casino.log("Player #{player.name} won #{player.bet * 2} in room #{name}")
         end
 
         for player <- losing_players do
-          Casino.sendMessage(
-            "Player #{player.name} lost #{player.bet} in room #{name}",
-            "coinflip_room_user"
-          )
+          Casino.send_notification("#{player.id}.You lost #{player.bet} in room #{name}")
+
+          Casino.log("Player #{player.name} lost #{player.bet} in room #{name}")
         end
 
         Casino.Games.Coinflip.Coinflip.clear_state(pid)
@@ -107,7 +107,7 @@ defmodule Casino.Games.Coinflip.Server do
     id = auto_increment(coinflips)
     refs = Map.put(refs, ref, id)
     coinflips = Map.put(coinflips, id, {name, pid, ref})
-    Casino.sendMessage("Coinflip room added: #{name}", "index")
+    Casino.send_message("Coinflip room added: #{name}", "index")
     {:noreply, {coinflips, refs}}
   end
 
@@ -160,7 +160,7 @@ defmodule Casino.Games.Coinflip.Server do
     coinflip = Enum.find(list, &(to_string(&1.id) == to_string(coinflip_room_id)))
     Casino.Games.Coinflip.Coinflip.add_player(coinflip.pid, player, bet, heads)
 
-    Casino.sendMessage("Bet on coinflip: #{player.name} #{bet} #{heads}", "index")
+    Casino.send_message("Bet on coinflip: #{player.name} #{bet} #{heads}", "coinflip_room")
 
     {:noreply, {coinflips, refs}}
   end

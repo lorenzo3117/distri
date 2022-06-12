@@ -47,8 +47,7 @@ defmodule Frontend.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:casino, path: "../backend"},
-      {:amqp, "~> 1.0"},
-      {:phx_izitoast, "~> 0.1.2"}
+      {:amqp, "~> 1.0"}
     ]
   end
 

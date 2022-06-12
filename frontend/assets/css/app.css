@@ -2,6 +2,10 @@
 @import "./phoenix.css";
 
 /* Custom */
+h1 {
+  margin: 0;
+}
+
 h3 {
   margin-bottom: 8px;
 }

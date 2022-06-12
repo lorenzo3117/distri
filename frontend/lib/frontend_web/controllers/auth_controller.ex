@@ -10,14 +10,12 @@ defmodule FrontendWeb.AuthController do
 
     conn
     |> put_session(:current_player, player)
-    |> PhxIzitoast.success("", 'Login successful')
     |> redirect(to: "/")
   end
 
   def logout(conn, _params) do
     conn
     |> put_session(:current_player, nil)
-    |> PhxIzitoast.success("", 'Logout successful')
     |> redirect(to: "/")
   end
 end

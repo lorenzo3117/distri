@@ -1,38 +1,40 @@
-<div class="d-flex">
-  <div>
-    <h3>Add new player</h3>
-    <form phx-submit="add_player">
-      <input type="text" name="name" placeholder="Player name" required>
-      <input type="submit" value="Add player">
-    </form>
+<div class="container">
+  <div class="d-flex">
+    <div>
+      <h3>Add new player</h3>
+      <form phx-submit="add_player">
+        <input type="text" name="name" placeholder="Player name" required>
+        <input type="submit" value="Add player">
+      </form>
+    </div>
+    <div>
+      <h3>Create new coinflip room</h3>
+      <form phx-submit="add_coinflip_room">
+        <input type="text" name="name" placeholder="Room name" required>
+        <input type="submit" value="Add room">
+      </form>
+    </div>
   </div>
-  <div>
-    <h3>Create new coinflip room</h3>
-    <form phx-submit="add_coinflip_room">
-      <input type="text" name="name" placeholder="Room name" required>
-      <input type="submit" value="Add room">
-    </form>
-  </div>
-</div>
 
-<h3>Players</h3>
-<%= if (length @players) == 0 do %>
-  <span>No players yet</span><br/>
-<% else %>
-  <%= for player <- @players do %>
-    <span><%= player.name %>, <%= player.balance %>€</span><br/>
-  <% end %>
-<% end %>
-
-<br/>
-
-<h3>Coinflip rooms</h3>
-<%= if (length @coinflip_rooms) == 0 do %>
-  <span>No coinflip rooms yet</span>
-<% else %>
-  <ul>
-    <%= for coinflip_room <- @coinflip_rooms do %>
-      <%= link(coinflip_room.name, to: "/coinflip_room/#{coinflip_room.id}") %><br/>
+  <h3>Players</h3>
+  <%= if (length @players) == 0 do %>
+    <span>No players yet</span><br/>
+  <% else %>
+    <%= for player <- @players do %>
+      <span><%= player.name %>, <%= player.balance %>€</span><br/>
     <% end %>
-  </ul>
-<% end %>
+  <% end %>
+
+  <br/>
+
+  <h3>Coinflip rooms</h3>
+  <%= if (length @coinflip_rooms) == 0 do %>
+    <span>No coinflip rooms yet</span>
+  <% else %>
+    <ul>
+      <%= for coinflip_room <- @coinflip_rooms do %>
+        <%= link(coinflip_room.name, to: "/coinflip_room/#{coinflip_room.id}") %><br/>
+      <% end %>
+    </ul>
+  <% end %>
+</div>
